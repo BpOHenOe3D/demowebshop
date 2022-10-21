@@ -64,7 +64,6 @@ public class Api extends TestsConfiguration {
                         .extract()
                         .cookie(authCookieName);
 
-
         step("Open minimal content, because cookie can be set when site is opened", () ->
                 open("/Themes/DefaultClean/Content/images/logo.png"));
 
@@ -108,7 +107,5 @@ public class Api extends TestsConfiguration {
         $("[value='Save']").click();
         $("#FirstName").shouldHave(value(firstName));
         $("#LastName").shouldHave(value(lastName));
-
-
     }
 }
