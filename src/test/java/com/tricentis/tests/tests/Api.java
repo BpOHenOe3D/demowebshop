@@ -29,7 +29,7 @@ public class Api extends TestsConfiguration {
     final String authCookieName = "NOPCOMMERCE.AUTH";
 
     @Test
-    @DisplayName("Регистрация пользователя через API + проверка через UI")
+    @DisplayName("Successful registration and edit user to some demowebshop (UI+API)")
     void registrationAndCheckApiAndUi() {
         Response register =
                 given()
