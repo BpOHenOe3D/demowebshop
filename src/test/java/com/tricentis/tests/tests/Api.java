@@ -103,11 +103,15 @@ public class Api extends TestsConfiguration {
         });
         step("Open edit profile page", () ->
                 open("/customer/info"));
-        $("#gender-male").click();
-        $("#FirstName").setValue(firstName);
-        $("#LastName").setValue(lastName);
-        $("[value='Save']").click();
-        $("#FirstName").shouldHave(value(firstName));
-        $("#LastName").shouldHave(value(lastName));
+        step("Редактирование данных и сохранение", () -> {
+            $("#gender-male").click();
+            $("#FirstName").setValue(firstName);
+            $("#LastName").setValue(lastName);
+            $("[value='Save']").click();
+        });
+        step("Проверка данных после редактирования", () -> {
+            $("#FirstName").shouldHave(value(firstName));
+            $("#LastName").shouldHave(value(lastName));
+        });
     }
 }
