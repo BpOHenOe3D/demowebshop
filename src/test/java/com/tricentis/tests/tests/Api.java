@@ -29,48 +29,49 @@ public class Api extends TestsConfiguration {
     final String authCookieName = "NOPCOMMERCE.AUTH";
 
     @Test
-    @DisplayName("Successful registration and edit user to some demowebshop (UI+API)")
+    @DisplayName("Регистрация пользователя через API и проверка через UI")
     void registrationAndCheckApiAndUi() {
-        Response register =
-                given()
-                        .filter(AllureRestAssuredFilter.withCustomTemplates())
-                        .contentType(ContentType.JSON)
-                        .log().all()
-                        .when()
-                        .get("/register")
-                        .then()
-                        .log().all()
-                        .extract()
-                        .response();
+        step("Получение токена и регистрация пользователя через API", () -> {
+            Response register =
+                    given()
+                            .filter(AllureRestAssuredFilter.withCustomTemplates())
+                            .contentType(ContentType.JSON)
+                            .log().all()
+                            .when()
+                            .get("/register")
+                            .then()
+                            .log().all()
+                            .extract()
+                            .response();
 
-        String registryToken = register.htmlPath().getString("**.find{it.@name == '__RequestVerificationToken'}.@value");
+            String registryToken = register.htmlPath().getString("**.find{it.@name == '__RequestVerificationToken'}.@value");
 
-        String authorizationCookie =
-                given()
-                        .filter(AllureRestAssuredFilter.withCustomTemplates())
-                        .contentType("application/x-www-form-urlencoded; charset=UTF-8")
-                        .formParam("Gender", "M")
-                        .formParam("FirstName", firstName)
-                        .formParam("LastName", lastName)
-                        .formParam("Email", email)
-                        .formParam("Password", password)
-                        .formParam("ConfirmPassword", password)
-                        .formParam(tokenName, registryToken)
-                        .cookies(register.cookies())
-                        .when()
-                        .post("/register")
-                        .then()
-                        .statusCode(302)
-                        .extract()
-                        .cookie(authCookieName);
+            String registration =
+                    given()
+                            .filter(AllureRestAssuredFilter.withCustomTemplates())
+                            .contentType("application/x-www-form-urlencoded; charset=UTF-8")
+                            .formParam("Gender", "M")
+                            .formParam("FirstName", firstName)
+                            .formParam("LastName", lastName)
+                            .formParam("Email", email)
+                            .formParam("Password", password)
+                            .formParam("ConfirmPassword", password)
+                            .formParam(tokenName, registryToken)
+                            .cookies(register.cookies())
+                            .when()
+                            .post("/register")
+                            .then()
+                            .statusCode(302)
+                            .extract()
+                            .cookie(authCookieName);
 
-        step("Open minimal content, because cookie can be set when site is opened", () ->
-                open("/Themes/DefaultClean/Content/images/logo.png"));
+            step("Open minimal content, because cookie can be set when site is opened", () ->
+                    open("/Themes/DefaultClean/Content/images/logo.png"));
 
-        step("Set cookie to to browser", () ->
-                getWebDriver().manage().addCookie(
-                        new Cookie("NOPCOMMERCE.AUTH", authorizationCookie)));
-
+            step("Set cookie to to browser", () ->
+                    getWebDriver().manage().addCookie(
+                            new Cookie("NOPCOMMERCE.AUTH", registration)));
+        });
         step("Open main page", () ->
                 open(""));
 
@@ -81,24 +82,25 @@ public class Api extends TestsConfiguration {
     @Test
     @DisplayName("Логин через API + редактирование профиля через UI")
     void editProfileApiAndUi() {
-        String loginCookie = given()
-                .filter(AllureRestAssuredFilter.withCustomTemplates())
-                .contentType("application/x-www-form-urlencoded; charset=UTF-8")
-                .formParam("Email", "1234@mai.riu")
-                .formParam("Password", "123456")
-                .when()
-                .post("/login")
-                .then()
-                .statusCode(302)
-                .extract()
-                .cookie(authCookieName);
-        step("Open minimal content, because cookie can be set when site is opened", () ->
-                open("/Themes/DefaultClean/Content/images/logo.png"));
+        step("Логин через API, получение cookie", () -> {
+            String loginCookie = given()
+                    .filter(AllureRestAssuredFilter.withCustomTemplates())
+                    .contentType("application/x-www-form-urlencoded; charset=UTF-8")
+                    .formParam("Email", "1234@mai.riu")
+                    .formParam("Password", "123456")
+                    .when()
+                    .post("/login")
+                    .then()
+                    .statusCode(302)
+                    .extract()
+                    .cookie(authCookieName);
+            step("Open minimal content, because cookie can be set when site is opened", () ->
+                    open("/Themes/DefaultClean/Content/images/logo.png"));
 
-        step("Set cookie to to browser", () ->
-                getWebDriver().manage().addCookie(
-                        new Cookie("NOPCOMMERCE.AUTH", loginCookie)));
-
+            step("Set cookie to to browser", () ->
+                    getWebDriver().manage().addCookie(
+                            new Cookie("NOPCOMMERCE.AUTH", loginCookie)));
+        });
         step("Open edit profile page", () ->
                 open("/customer/info"));
         $("#gender-male").click();
