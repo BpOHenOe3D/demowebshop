@@ -2,6 +2,7 @@ package com.tricentis.tests.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import com.tricentis.tests.config.ConfigProvider;
 import com.tricentis.tests.helpers.AllureAttach;
 import com.tricentis.tests.helpers.DriverConfiguration;
 import io.qameta.allure.selenide.AllureSelenide;
@@ -14,8 +15,12 @@ public class TestsConfiguration {
     static void settings() {
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
         DriverConfiguration.configure();
-        RestAssured.baseURI = "https://demowebshop.tricentis.com";
-        Configuration.baseUrl = "https://demowebshop.tricentis.com";
+
+
+        ConfigProvider config = new ConfigProvider();
+        config.setConfiguration("remote"); // конфиг для удаленного запуска
+        //config.setConfiguration("local"); // раскомментить для локального запуска
+
     }
 
     @AfterEach
